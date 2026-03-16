@@ -1,0 +1,27 @@
+select * from produtos_estoque;
+select * from historico_consumo;
+
+-- Remove as tabelas antigas para evitar conflitos de estrutura
+DROP TABLE IF EXISTS historico_consumo;
+DROP TABLE IF EXISTS produtos_estoque;
+
+CREATE TABLE produtos_estoque (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    marca VARCHAR(100),
+    qtd_estoque DECIMAL NOT NULL,          -- Volume total (soma das embalagens)
+    medida_unitaria DECIMAL NOT NULL,      -- Conteúdo de 1 única embalagem
+    qtdtotal_cadastrada INTEGER DEFAULT 1, -- Quantas unidades compradas
+    tipo VARCHAR(100),                     -- Aumentado para suportar nomes de unidades longos
+    validade DATE NOT NULL,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    excluido BOOLEAN DEFAULT false         -- Controle de remoção (Soft Delete)
+);
+
+CREATE TABLE historico_consumo (
+    id SERIAL PRIMARY KEY,
+    produto_nome VARCHAR(100),
+    quantidade_usada VARCHAR(50),
+    data_uso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    visivel BOOLEAN DEFAULT true           -- Controle para "limpar" a lista da tela
+);

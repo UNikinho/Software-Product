@@ -1,0 +1,2 @@
+Para iniciar o Servidor NODE com o POSTGREE digite no terminal com o node instalado: node servidor.js
+Para encerrar o Servidor NODE: Cntrl + C no terminal;
