@@ -1,0 +1,42 @@
+SELECT * FROM usuarios;
+SELECT * FROM produtos_estoque;
+SELECT * FROM historico_consumo;
+
+DROP TABLE IF EXISTS historico_consumo;
+DROP TABLE IF EXISTS produtos_estoque;
+DROP TABLE IF EXISTS usuarios;
+
+-- 1. Criar tabela de Usuários
+CREATE TABLE usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(100) NOT NULL, -- Em produção, use hash/criptografia!
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 2. Recriar tabela de estoque vinculada ao usuário
+CREATE TABLE produtos_estoque (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    nome VARCHAR(150) NOT NULL, -- Aumentado para dar margem a nomes longos
+    marca VARCHAR(100),
+    qtd_estoque DECIMAL NOT NULL,
+    medida_unitaria DECIMAL NOT NULL,
+    qtdtotal_cadastrada DECIMAL DEFAULT 1.0, -- Permite armazenar meia embalagem (ex: 0.5)
+    tipo VARCHAR(100),
+    validade DATE NOT NULL,
+    data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    excluido BOOLEAN DEFAULT false
+);
+
+-- 3. Recriar tabela de histórico vinculada ao usuário
+CREATE TABLE historico_consumo (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+    produto_id INTEGER REFERENCES produtos_estoque(id) ON DELETE SET NULL, -- Vincula ao ID do produto original
+    produto_nome VARCHAR(255), -- AUMENTADO: Evita o erro de character varying ao concatenar "[EDIÇÃO] ..."
+    quantidade_usada TEXT, -- Mantido TEXT para suportar perfeitamente os textos longos das edições
+    data_uso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    visivel BOOLEAN DEFAULT true
+);
